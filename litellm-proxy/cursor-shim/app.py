@@ -133,15 +133,24 @@ def unwrap_chat_completion_response(resp: dict[str, Any]) -> dict[str, Any]:
                 except json.JSONDecodeError:
                     obj = None
                 if isinstance(obj, dict):
-                    inner = obj.get("content")
-                    if isinstance(inner, str) and len(inner.strip()) >= 40:
-                        msg2["content"] = inner
-                    elif isinstance(obj.get("thought"), str) and obj["thought"].strip():
-                        # Do not echo `thought` back: Cursor would re-feed it and the model "talks to itself".
+                    # OpenAI-style tool mimicry (local model fantasy, not a real tool round-trip)
+                    fc = obj.get("function_call")
+                    if isinstance(fc, dict) and isinstance(fc.get("name"), str):
                         msg2["content"] = (
-                            "*(Local model replied with planning JSON only, not a real answer. "
-                            "Start a **new chat**, pick **gpt-4o** or **gpt-5.1**, and ask again.)*"
+                            "*(Local model printed fake `function_call` JSON instead of an answer. "
+                            "It is not executed. Use Cursor’s built-in model for real file tools, "
+                            "or clone the repo so the path exists on this machine.)*"
                         )
+                    else:
+                        inner = obj.get("content")
+                        if isinstance(inner, str) and len(inner.strip()) >= 40:
+                            msg2["content"] = inner
+                        elif isinstance(obj.get("thought"), str) and obj["thought"].strip():
+                            # Do not echo `thought` back: Cursor would re-feed it and the model "talks to itself".
+                            msg2["content"] = (
+                                "*(Local model replied with planning JSON only, not a real answer. "
+                                "Start a **new chat**, pick **gpt-4o** or **gpt-5.1**, and ask again.)*"
+                            )
         ch2["message"] = msg2
         new_choices.append(ch2)
     out["choices"] = new_choices
