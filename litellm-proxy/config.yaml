@@ -26,9 +26,10 @@ model_list:
           num_ctx: 8192
 
   # Optional second slot: choose "gpt-4o-mini" in Cursor for Gemma.
+  # Uses Ollama model gemma4-cursor:31b (see modelfiles/gemma4-cursor-31b + scripts/create-aliases.sh).
   - model_name: gpt-4o-mini
     litellm_params:
-      model: "ollama/gemma4:31b"
+      model: "ollama/gemma4-cursor:31b"
       api_base: http://host.docker.internal:11434
       extra_body:
         options:
