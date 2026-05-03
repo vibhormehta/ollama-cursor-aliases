@@ -36,7 +36,7 @@ To tunnel **only** LiteLLM (free port 11434 for something else): `OLLAMA_LOCAL= 
 
 ### Cloudflare Tunnel (`cloudflared`)
 
-Same pattern as exposing **Ollama on 11434** via Cloudflare: run **`cloudflared`** on the LLM host and point ingress at **`http://127.0.0.1:4000`**. Then Cursor uses **`https://<your-hostname>/v1`** with your LiteLLM `master_key`. See **`../cloudflare/README.md`** and **`../cloudflare/config.example.yml`**.
+Ollama is already at **`https://ollama.tradechefpro.com`**. Add a second hostname (e.g. **`litellm.tradechefpro.com`**) on the same tunnel to **`http://127.0.0.1:4000`**. Cursor then uses **`https://litellm.tradechefpro.com/v1`** and your LiteLLM `master_key`. See **`../cloudflare/README.md`**.
 
 ## Configure `config.yaml`
 

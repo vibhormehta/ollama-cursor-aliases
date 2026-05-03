@@ -1,14 +1,16 @@
-# Rename/copy to e.g. ~/.cloudflared/litellm.yml and replace TUNNEL_UUID + credentials path.
-# Create tunnel: cloudflared tunnel create litellm-proxy
-# DNS: cloudflared tunnel route dns litellm-proxy litellm.example.com
+# Copy to e.g. ~/.cloudflared/tradechefpro.yml and replace TUNNEL_UUID + credentials path.
+#
+# If Ollama is already on Cloudflare as ollama.tradechefpro.com, use the SAME tunnel and add
+# a second ingress hostname for LiteLLM (4000). DNS: create litellm.tradechefpro.com → tunnel route.
 
 tunnel: TUNNEL_UUID
 credentials-file: /home/YOU/.cloudflared/TUNNEL_UUID.json
 
 ingress:
-  - hostname: litellm.example.com
+  # LiteLLM proxy (Cursor: https://litellm.tradechefpro.com/v1 + master_key + model gpt-4o)
+  - hostname: litellm.tradechefpro.com
     service: http://127.0.0.1:4000
-  # Optional: mirror your Ollama Cloudflare setup on another hostname
-  # - hostname: ollama.example.com
-  #   service: http://127.0.0.1:11434
+  # Existing Ollama endpoint (OpenAI compat on …/v1)
+  - hostname: ollama.tradechefpro.com
+    service: http://127.0.0.1:11434
   - service: http_status:404

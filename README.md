@@ -49,7 +49,7 @@ From the **Cursor host**, the repo includes **`scripts/tunnel-to-llm.sh`**: it f
 
 ### Cloudflare Tunnel
 
-To expose LiteLLM over **`https://`** the same way you already expose Ollama, use **`cloudflared`** on the LLM host with ingress to **`http://127.0.0.1:4000`**. See **`cloudflare/README.md`**.
+Ollama is already at **`https://ollama.tradechefpro.com`**. Add **`litellm.tradechefpro.com`** (or similar) on the **same tunnel** pointing to **`http://127.0.0.1:4000`** for LiteLLM. See **`cloudflare/README.md`** and **`cloudflare/config.example.yml`**.
 
 ### If Cursor still rejects model names (proxy + catalog id)
 

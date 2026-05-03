@@ -1,72 +1,64 @@
 # Cloudflare Tunnel for LiteLLM (and Ollama)
 
-This exposes **LiteLLM** on the LLM host (usually `http://127.0.0.1:4000`) through **Cloudflare**, same pattern as tunneling Ollama on **11434**: no inbound firewall port-forward; HTTPS at the edge.
+This exposes **LiteLLM** on the LLM host (`http://127.0.0.1:4000`) through **Cloudflare**, the same way **Ollama** is already exposed at **`https://ollama.tradechefpro.com`** → port **11434**.
+
+## Domain layout (this setup)
+
+| Hostname | Points to (localhost on LLM server) |
+| -------- | ----------------------------------- |
+| `ollama.tradechefpro.com` | `http://127.0.0.1:11434` (already in use) |
+| `litellm.tradechefpro.com` | `http://127.0.0.1:4000` (LiteLLM — add this) |
+
+Add **`litellm.tradechefpro.com`** as a **Public hostname** on the **same** Cloudflare Tunnel as Ollama (recommended): one `cloudflared` config, two `ingress` rules. Alternatively create a second tunnel only if you prefer isolation.
 
 ## On the LLM server
 
-1. **Install `cloudflared`** (package or [GitHub releases](https://github.com/cloudflare/cloudflared/releases)).
+1. **Install `cloudflared`** ([releases](https://github.com/cloudflare/cloudflared/releases)) if needed.
 
-2. **Log in and create a tunnel** (one-time browser step):
+2. **Tunnel** — if Ollama already uses a tunnel, reuse it; otherwise:
 
    ```bash
    cloudflared tunnel login
-   cloudflared tunnel create litellm-proxy
+   cloudflared tunnel create tradechefpro-llm
    ```
 
-   Note the printed **tunnel UUID** and the path to the **credentials JSON**.
-
-3. **DNS**: attach a hostname to the tunnel (pick your zone):
+3. **DNS** — create the LiteLLM hostname in the same zone:
 
    ```bash
-   cloudflared tunnel route dns litellm-proxy litellm.example.com
+   cloudflared tunnel route dns <tunnel-name-or-id> litellm.tradechefpro.com
    ```
 
-   Or add a **Public hostname** in Zero Trust → Networks → Tunnels → your tunnel → **Configure**.
+   Or in **Zero Trust → Networks → Tunnels → [tunnel] → Public hostnames**, add:
 
-4. **Config file**: copy `config.example.yml` to e.g. `~/.cloudflared/litellm.yml` and set:
+   - Subdomain / domain: `litellm.tradechefpro.com`  
+   - Service: `http://127.0.0.1:4000`
 
-   - `tunnel:` → your tunnel UUID  
-   - `credentials-file:` → path to the `.json` credentials  
-   - `hostname:` → the same FQDN you routed (`litellm.example.com`)  
-   - `service:` → `http://127.0.0.1:4000` (LiteLLM container listening on the host)
+   Keep your existing **`ollama.tradechefpro.com`** → `http://127.0.0.1:11434` rule unchanged.
 
-   To expose **Ollama** the same way you already do, add another ingress rule:
+4. **Ingress config** — merge with your live tunnel config so **both** hostnames appear **before** the catch-all. See **`config.example.yml`** in this folder.
 
-   ```yaml
-   - hostname: ollama.example.com
-     service: http://127.0.0.1:11434
-   ```
+5. **Run / reload `cloudflared`** (restart the tunnel service after editing config).
 
-   Order matters: specific hostnames first, catch-all last.
+6. Ensure LiteLLM is up: `docker compose up -d` in `litellm-proxy/`.
 
-5. **Run the tunnel** (systemd unit recommended):
-
-   ```bash
-   cloudflared tunnel --config ~/.cloudflared/litellm.yml run
-   ```
-
-   Ensure **Docker LiteLLM is up** (`docker compose up -d` in `litellm-proxy/`) before depending on the tunnel.
-
-## Quick test (no named hostname)
-
-For a throwaway URL while debugging:
+## Quick test (no permanent hostname)
 
 ```bash
 cloudflared tunnel --url http://127.0.0.1:4000
 ```
 
-Use the printed `trycloudflare.com` URL; append `/v1` for OpenAI-style clients. Not for production.
+Use the `trycloudflare.com` URL + `/v1` only for debugging.
 
-## In Cursor (your laptop)
+## In Cursor
 
-- **Override OpenAI Base URL:** `https://litellm.example.com/v1`  
+- **Override OpenAI Base URL:** `https://litellm.tradechefpro.com/v1`  
 - **API key:** LiteLLM `master_key` (e.g. `sk-cursor-local` unless you changed it)  
-- **Model:** `gpt-4o` / `gpt-4o-mini` (catalog ids mapped in LiteLLM config)
+- **Model:** `gpt-4o` / `gpt-4o-mini`
 
-Cloudflare terminates TLS; Cursor talks HTTPS to Cloudflare, `cloudflared` forwards HTTP to localhost **4000**.
+Direct Ollama from tools/scripts stays **`https://ollama.tradechefpro.com/v1`** when you call Ollama’s OpenAI-compatible API without LiteLLM.
 
 ## Operational notes
 
-- **Streaming**: Cloudflare Tunnel supports streaming responses; LiteLLM/Ollama streaming used by Cursor generally works.  
-- **Auth**: Put a **strong** `master_key` in LiteLLM config if the hostname is public; optionally add **Cloudflare Access** in front of the hostname for extra login.  
-- **Secrets:** Do not commit `~/.cloudflared/*.json` or tunnel UUIDs into git.
+- **Streaming**: Generally fine through Cloudflare Tunnel for chat completions.  
+- **Auth**: Use a **strong** `master_key` on public URLs; optional **Cloudflare Access** in front of `litellm.tradechefpro.com`.  
+- **Secrets:** Do not commit `~/.cloudflared/*.json` or tunnel UUIDs.
