@@ -8,9 +8,10 @@
 
 model_list:
   # Pick "gpt-4o" in Cursor’s model dropdown while using Override OpenAI Base URL → this proxy.
+  # Uses qwen2.5-cursor:32b (see modelfiles/qwen25-cursor-coder-32b) to reduce fake JSON/ReAct output.
   - model_name: gpt-4o
     litellm_params:
-      model: "ollama/qwen2.5-coder:32b"
+      model: "ollama/qwen2.5-cursor:32b"
       api_base: http://host.docker.internal:11434
       extra_body:
         options:
@@ -19,7 +20,7 @@ model_list:
   # Composer-friendly alias: pick "gpt-5.1" in Cursor if "gpt-4o" is not listed there; same Qwen backend.
   - model_name: gpt-5.1
     litellm_params:
-      model: "ollama/qwen2.5-coder:32b"
+      model: "ollama/qwen2.5-cursor:32b"
       api_base: http://host.docker.internal:11434
       extra_body:
         options:
