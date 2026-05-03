@@ -1,6 +1,10 @@
 # LiteLLM proxy: Cursor sends a catalog model id (e.g. gpt-4o); we route to Ollama.
 # litellm_params.model must be a real Ollama tag (see `ollama list` / GET /api/tags), not a made-up id.
 # Values with ':' must be quoted in YAML.
+#
+# Cursor/Composer can send huge prompts. Default Ollama num_ctx (e.g. 32k) + 30B+ models ⇒ multi‑minute
+# prefills, client timeouts, and a stuck queue. extra_body.options.num_ctx caps KV cache / prefill cost
+# (long context is truncated). Raise to 16384/32768 if you need more context and accept slower first token.
 
 model_list:
   # Pick "gpt-4o" in Cursor’s model dropdown while using Override OpenAI Base URL → this proxy.
@@ -8,18 +12,27 @@ model_list:
     litellm_params:
       model: "ollama/qwen2.5-coder:32b"
       api_base: http://host.docker.internal:11434
+      extra_body:
+        options:
+          num_ctx: 8192
 
   # Composer-friendly alias: pick "gpt-5.1" in Cursor if "gpt-4o" is not listed there; same Qwen backend.
   - model_name: gpt-5.1
     litellm_params:
       model: "ollama/qwen2.5-coder:32b"
       api_base: http://host.docker.internal:11434
+      extra_body:
+        options:
+          num_ctx: 8192
 
   # Optional second slot: choose "gpt-4o-mini" in Cursor for Gemma.
   - model_name: gpt-4o-mini
     litellm_params:
       model: "ollama/gemma4:31b"
       api_base: http://host.docker.internal:11434
+      extra_body:
+        options:
+          num_ctx: 8192
 
 # Require this bearer token on requests (Cursor → OpenAI API Key).
 general_settings:
