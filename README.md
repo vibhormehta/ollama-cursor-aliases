@@ -42,3 +42,20 @@ curl -sS -X POST "https://<your-ollama-host>/v1/chat/completions" \
 ```
 
 You should get JSON with `choices`. If you cannot run `ollama create` on the server, the alternative is a reverse proxy that rewrites the JSON `model` field to the real tagged name before forwarding to Ollama.
+
+## Publish to GitHub
+
+From `/home/vib/ollama-cursor-aliases` (or after copying this tree elsewhere), authenticate and create the remote repo in one step:
+
+```bash
+gh auth login
+cd /home/vib/ollama-cursor-aliases
+gh repo create ollama-cursor-aliases --public --source=. --remote=origin --push
+```
+
+If you prefer the website: create an empty repository (no README), then:
+
+```bash
+git remote add origin https://github.com/<you>/ollama-cursor-aliases.git
+git push -u origin main
+```
