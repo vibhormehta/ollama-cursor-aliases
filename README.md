@@ -1,5 +1,7 @@
 # Ollama aliases for Cursor
 
+> **Personal learning only.** This repo is a **homelab / side-project** sandbox for wiring **Cursor** to **local Ollama** (aliases, LiteLLM, notes). It is **not** official work product from any employer, and it contains **no** proprietary business logic—see **`DISCLAIMER.md`**. For a longer narrative of what we tried and what broke, see **`docs/CURSOR_LITELLM_OLLAMA_EXPERIENCE.md`**. To publish your own copy on GitHub safely, see **`docs/PUBLISH_TO_GITHUB.md`**.
+
 Cursor’s custom model field rejects colons (`:`) in the model name. Ollama’s real tags look like `qwen2.5-coder:32b` and `gemma4:31b`, so the IDE will not accept them even when the API is correct.
 
 This repo holds **Modelfiles** that define colon-free names pointing at the same weights:
@@ -59,14 +61,19 @@ Use a small OpenAI-compatible proxy so Cursor only ever selects a **normal** mod
 
 **`docs/CURSOR_LITELLM_OLLAMA_EXPERIENCE.md`** — Cursor credits vs proxy, shim (streaming, SSE, unwrap), huge-context stalls, `-cursor` Modelfiles, fake tool JSON, Agent vs chat, and sunsetting checklist.
 
+**`docs/PUBLISH_TO_GITHUB.md`** — how to put this on a **personal** GitHub repo with a clear description so it reads as learning, not company software.
+
 ## Publish to GitHub
 
-From `/home/vib/ollama-cursor-aliases` (or after copying this tree elsewhere), authenticate and create the remote repo in one step:
+Use a **personal** repo and a description that says **learning / homelab** (see **`docs/PUBLISH_TO_GITHUB.md`** and **`DISCLAIMER.md`**).
+
+From `/home/vib/ollama-cursor-aliases` (or after copying this tree elsewhere):
 
 ```bash
 gh auth login
 cd /home/vib/ollama-cursor-aliases
-gh repo create ollama-cursor-aliases --public --source=. --remote=origin --push
+gh repo create ollama-cursor-aliases --public --source=. --remote=origin \
+  --description "Personal learning: Cursor + LiteLLM + Ollama (not employer work)" --push
 ```
 
 If you prefer the website: create an empty repository (no README), then:

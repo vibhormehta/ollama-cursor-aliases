@@ -2,6 +2,8 @@
 
 This document captures real-world behavior we hit while wiring **Cursor** to **local Ollama** through **LiteLLM** (and a small **cursor-shim**). Use it when reviving or debugging the stack; operational steps still live in **`litellm-proxy/README.md`** and **`README.md`**.
 
+**Publication context:** this material is meant for a **public, personal learning repo**—not an employer deliverable. See the repo root **`DISCLAIMER.md`** and **`docs/PUBLISH_TO_GITHUB.md`** so anyone (including your company) can see the intent: **homelab notes**, no proprietary systems, **educational only**.
+
 ---
 
 ## 1. What we were trying to do

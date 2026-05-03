@@ -1,6 +1,6 @@
 # LiteLLM proxy for Cursor (catalog model ids → Ollama)
 
-Narrative lessons (Cursor credits, shim, streaming, context caps, fake tool JSON, Agent vs chat): **`../docs/CURSOR_LITELLM_OLLAMA_EXPERIENCE.md`**.
+Narrative lessons (Cursor credits, shim, streaming, context caps, fake tool JSON, Agent vs chat): **`../docs/CURSOR_LITELLM_OLLAMA_EXPERIENCE.md`**. This tree is intended as **personal learning**; see **`../DISCLAIMER.md`**.
 
 Cursor may reject custom model **names** even when the API works. This proxy accepts OpenAI-style calls where Cursor sends a model id it already allows (for example `gpt-4o`), and LiteLLM forwards to Ollama using **`litellm_params.model`**.
 
