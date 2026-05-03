@@ -1,0 +1,14 @@
+# Rename/copy to e.g. ~/.cloudflared/litellm.yml and replace TUNNEL_UUID + credentials path.
+# Create tunnel: cloudflared tunnel create litellm-proxy
+# DNS: cloudflared tunnel route dns litellm-proxy litellm.example.com
+
+tunnel: TUNNEL_UUID
+credentials-file: /home/YOU/.cloudflared/TUNNEL_UUID.json
+
+ingress:
+  - hostname: litellm.example.com
+    service: http://127.0.0.1:4000
+  # Optional: mirror your Ollama Cloudflare setup on another hostname
+  # - hostname: ollama.example.com
+  #   service: http://127.0.0.1:11434
+  - service: http_status:404

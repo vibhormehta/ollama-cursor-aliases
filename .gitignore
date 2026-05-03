@@ -6,3 +6,5 @@
 __pycache__/
 *.py[cod]
 *.gitbundle
+# Cloudflare tunnel creds if checked out next to the repo
+.cloudflared/
