@@ -137,11 +137,10 @@ def unwrap_chat_completion_response(resp: dict[str, Any]) -> dict[str, Any]:
                     if isinstance(inner, str) and len(inner.strip()) >= 40:
                         msg2["content"] = inner
                     elif isinstance(obj.get("thought"), str) and obj["thought"].strip():
-                        th = str(obj["thought"]).strip()
+                        # Do not echo `thought` back: Cursor would re-feed it and the model "talks to itself".
                         msg2["content"] = (
-                            "*The model returned only planning metadata, not the full answer.* "
-                            "Send the same request again, or try another model / a new chat.\n\n---\n\n"
-                            + th
+                            "*(Local model replied with planning JSON only, not a real answer. "
+                            "Start a **new chat**, pick **gpt-4o** or **gpt-5.1**, and ask again.)*"
                         )
         ch2["message"] = msg2
         new_choices.append(ch2)
