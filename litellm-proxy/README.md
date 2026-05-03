@@ -14,6 +14,26 @@ Cursor may reject custom model **names** even when the API works. This proxy acc
 
 Put TLS (Caddy, nginx, Traefik) in front of LiteLLM if Cursor must use `https://`.
 
+### SSH tunnel from the Cursor host (same idea as tunneling Ollama)
+
+If LiteLLM only listens on the LLM server’s loopback, forward ports over SSH so Cursor can use **localhost**:
+
+```bash
+# From the repo on your laptop:
+chmod +x scripts/tunnel-to-llm.sh
+./scripts/tunnel-to-llm.sh you@your-llm-server
+```
+
+That forwards **`127.0.0.1:4000` → server `127.0.0.1:4000`** (LiteLLM) and **`127.0.0.1:11434` → server `127.0.0.1:11434`** (Ollama). Leave the terminal open.
+
+Then in Cursor:
+
+- **Override OpenAI Base URL:** `http://127.0.0.1:4000/v1`
+- **API key:** same as LiteLLM `master_key` (e.g. `sk-cursor-local`)
+- **Model:** `gpt-4o` / `gpt-4o-mini`
+
+To tunnel **only** LiteLLM (free port 11434 for something else): `OLLAMA_LOCAL= ./scripts/tunnel-to-llm.sh you@server`
+
 ## Configure `config.yaml`
 
 Edit `model_list` entries:
