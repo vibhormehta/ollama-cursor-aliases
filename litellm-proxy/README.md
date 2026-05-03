@@ -84,8 +84,10 @@ You should see JSON with `choices`; the backend should be your Ollama model.
    - Enable **Override OpenAI Base URL** (wording may vary by version).  
    - Set base URL to your proxy’s OpenAI-compatible root, e.g. `https://proxy.example.com/v1` or `http://127.0.0.1:4000/v1` for local testing.
 
-2. **API key**  
-   - Use the same value as `master_key` in `config.yaml` (default `sk-cursor-local`).
+2. **API key (`sk-…` field + toggle)**  
+   - Value should match LiteLLM **`master_key`** in `config.yaml` (default `sk-cursor-local`).  
+   - **If chat works with the OpenAI API Key toggle OFF, leave it OFF.** Turning it **on** can switch Cursor to a different client path that POSTs **`/v1/chat/completions`** with a body **without `messages`** (e.g. Responses-style `input`). LiteLLM then errors: `Router.acompletion() missing 1 required positional argument: 'messages'` (HTTP 500). That is a **Cursor ↔ LiteLLM wire-format mismatch**, not a bad `master_key`.  
+   - LiteLLM’s separate **`/cursor`** integration (base URL ending in **`/cursor`**, virtual keys / dashboard) is for Cursor’s documented flow; this repo’s simple **`/v1` + `master_key`** setup targets **plain Chat Completions** JSON.
 
 3. **Model**  
    - In the chat/composer model picker, choose **`gpt-4o`** or **`gpt-4o-mini`** (or whatever `model_name` you defined)—**not** the Ollama tag. LiteLLM maps that id to Ollama.
@@ -104,6 +106,7 @@ Use the same `api_base` rules; on Linux without Docker, `api_base: http://127.0.
 
 ## Troubleshooting
 
+- **`Router.acompletion() missing … 'messages'` (500) from Cursor after enabling OpenAI API Key:** Cursor is sending a **non–chat-completions** payload to **`/v1/chat/completions`** (missing `messages`). **Workaround:** keep the **OpenAI API Key toggle OFF** while keeping **`https://…/v1`** override; many builds still send the bearer token from the key field for custom bases. If you must have the toggle on, upgrade LiteLLM often, watch [Cursor forum threads on Responses vs chat completions](https://forum.cursor.com/search?q=litellm%20chat%20completions), or put a small **reverse proxy** in front of LiteLLM that normalizes `input` → `messages` before forwarding.
 - **502 / connection errors**: From inside the LiteLLM container/host, `curl` Ollama’s root or `/api/tags` using the same `api_base` you configured.
 - **Invalid model / upstream error with the real Ollama name**: Fix `litellm_params.model` to match `ollama list` on the target host, restart LiteLLM. Cursor can stay on `gpt-4o`; the bug is the LiteLLM → Ollama route, not the dropdown label.
 - **Wrong routing**: Cursor must send a `model` string that exactly matches a `model_name` in `config.yaml` (e.g. `gpt-4o`).
