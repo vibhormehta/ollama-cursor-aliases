@@ -93,7 +93,12 @@ if [[ "$ready" -eq 1 ]]; then
     -H "Authorization: Bearer sk-cursor-local" \
     -H "Content-Type: application/json" \
     -d '{"model":"gpt-4o","messages":[{"role":"user","content":"hi"}],"max_tokens":3}' | python3 -c "import sys,json; j=json.load(sys.stdin); assert 'choices' in j, j; print('  choices:', len(j['choices']))" \
-    && ok "LiteLLM on :4000" || fail "LiteLLM on :4000 bad response"
+    && ok "proxy on :4000 (messages)" || fail "proxy on :4000 bad response"
+  curl -sS -m 120 "http://127.0.0.1:4000/v1/chat/completions" \
+    -H "Authorization: Bearer sk-cursor-local" \
+    -H "Content-Type: application/json" \
+    -d '{"model":"gpt-4o","input":"hi","max_tokens":3}' | python3 -c "import sys,json; j=json.load(sys.stdin); assert 'choices' in j, j; print('  choices (input→messages):', len(j['choices']))" \
+    && ok "cursor-shim input rewrite" || fail "cursor-shim input rewrite failed"
 else
   echo "  (no service on 127.0.0.1:4000 — start with: cd litellm-proxy && docker compose up -d)"
 fi

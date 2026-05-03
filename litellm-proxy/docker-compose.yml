@@ -2,8 +2,11 @@ services:
   litellm:
     # Same image family as https://docs.litellm.ai/docs/proxy/docker_quick_start
     image: docker.litellm.ai/berriai/litellm:main-latest
-    ports:
-      - "${LITELLM_PORT:-4000}:4000"
+    expose:
+      - "4000"
+    # Optional: bypass cursor-shim for debugging (curl LiteLLM directly).
+    # ports:
+    #   - "127.0.0.1:4001:4000"
     volumes:
       - ./config.yaml:/app/config.yaml:ro
     command:
@@ -18,4 +21,16 @@ services:
     extra_hosts:
       # Linux: map host.docker.internal to the host gateway (Docker 20.10+).
       - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+
+  # Cursor often only sends traffic to a custom OpenAI base when the API key toggle is ON; that path can
+  # POST Responses-style JSON (`input` / `instructions`) to /v1/chat/completions. LiteLLM expects `messages`.
+  cursor-shim:
+    build: ./cursor-shim
+    ports:
+      - "${LITELLM_PORT:-4000}:8080"
+    environment:
+      UPSTREAM: http://litellm:4000
+    depends_on:
+      - litellm
     restart: unless-stopped
