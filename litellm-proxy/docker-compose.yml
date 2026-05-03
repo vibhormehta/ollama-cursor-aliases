@@ -11,7 +11,10 @@ services:
       - "/app/config.yaml"
       - "--port"
       - "4000"
-      # - "--detailed_debug"
+      # Verbose: logs enough to confirm every HTTP hit (path, routing). May include prompts — turn off when done.
+      - "--detailed_debug"
+    environment:
+      - LITELLM_LOG=DEBUG
     extra_hosts:
       # Linux: map host.docker.internal to the host gateway (Docker 20.10+).
       - "host.docker.internal:host-gateway"

@@ -104,6 +104,18 @@ litellm --config config.yaml --port 4000
 
 Use the same `api_base` rules; on Linux without Docker, `api_base: http://127.0.0.1:11434` is typical for local Ollama.
 
+## See every request in `docker logs` (did Cursor hit LiteLLM?)
+
+Compose enables **`--detailed_debug`** and **`LITELLM_LOG=DEBUG`**. After `docker compose up -d`, run:
+
+```bash
+sudo docker logs -f --timestamps litellm-proxy-litellm-1
+```
+
+You should see each **`GET/POST`** to **`/v1/...`** (and more detail around routing). **Disable** `--detailed_debug` / set `LITELLM_LOG` back when finished — debug output can include **message text** (privacy).
+
+Per-request only (no global spam): some builds honor **`"litellm_request_debug": true`** in the JSON body of a single `curl` test.
+
 ## Troubleshooting
 
 - **`Router.acompletion() missing … 'messages'` (500) from Cursor after enabling OpenAI API Key:** Cursor is sending a **non–chat-completions** payload to **`/v1/chat/completions`** (missing `messages`). **Workaround:** keep the **OpenAI API Key toggle OFF** while keeping **`https://…/v1`** override; many builds still send the bearer token from the key field for custom bases. If you must have the toggle on, upgrade LiteLLM often, watch [Cursor forum threads on Responses vs chat completions](https://forum.cursor.com/search?q=litellm%20chat%20completions), or put a small **reverse proxy** in front of LiteLLM that normalizes `input` → `messages` before forwarding.
