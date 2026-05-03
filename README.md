@@ -55,6 +55,10 @@ Ollama is already at **`https://ollama.tradechefpro.com`**. Add **`litellm.trade
 
 Use a small OpenAI-compatible proxy so Cursor only ever selects a **normal** model id (e.g. `gpt-4o`) while the proxy routes to Ollama. In **`litellm-proxy/config.yaml`**, set `litellm_params.model` to real tags from **`ollama list`** on the LLM host (e.g. `"ollama/qwen2.5-coder:32b"`), not made-up names. See **`litellm-proxy/README.md`** for Docker Compose and Cursor settings.
 
+### Lessons learned (longer write-up)
+
+**`docs/CURSOR_LITELLM_OLLAMA_EXPERIENCE.md`** — Cursor credits vs proxy, shim (streaming, SSE, unwrap), huge-context stalls, `-cursor` Modelfiles, fake tool JSON, Agent vs chat, and sunsetting checklist.
+
 ## Publish to GitHub
 
 From `/home/vib/ollama-cursor-aliases` (or after copying this tree elsewhere), authenticate and create the remote repo in one step:
