@@ -1,0 +1,19 @@
+# Example when Ollama is on another host (TLS). Copy to config.yaml and adjust.
+# Use the Ollama *root* URL (scheme + host, optional port). No /v1 suffix.
+
+model_list:
+  - model_name: gpt-4o
+    litellm_params:
+      model: ollama/qwen25-coder-32b
+      api_base: https://ollama.example.com
+
+  - model_name: gpt-4o-mini
+    litellm_params:
+      model: ollama/gemma4-31b
+      api_base: https://ollama.example.com
+
+general_settings:
+  master_key: sk-cursor-local
+
+litellm_settings:
+  drop_params: true

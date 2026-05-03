@@ -43,6 +43,10 @@ curl -sS -X POST "https://<your-ollama-host>/v1/chat/completions" \
 
 You should get JSON with `choices`. If you cannot run `ollama create` on the server, the alternative is a reverse proxy that rewrites the JSON `model` field to the real tagged name before forwarding to Ollama.
 
+### If Cursor still rejects model names (proxy + catalog id)
+
+Use a small OpenAI-compatible proxy so Cursor only ever selects a **normal** model id (e.g. `gpt-4o`) while the proxy routes to Ollama. See **`litellm-proxy/README.md`** for Docker Compose, `config.yaml`, and Cursor settings.
+
 ## Publish to GitHub
 
 From `/home/vib/ollama-cursor-aliases` (or after copying this tree elsewhere), authenticate and create the remote repo in one step:

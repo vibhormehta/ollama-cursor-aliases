@@ -1,0 +1,22 @@
+# LiteLLM proxy: Cursor sends a catalog model id (e.g. gpt-4o); we route to Ollama.
+# Edit OLLAMA_API_BASE for your setup (local Ollama or remote URL without trailing slash).
+
+model_list:
+  # Pick "gpt-4o" in Cursor’s model dropdown while using Override OpenAI Base URL → this proxy.
+  - model_name: gpt-4o
+    litellm_params:
+      model: ollama/qwen25-coder-32b
+      api_base: http://host.docker.internal:11434
+
+  # Optional second slot: choose "gpt-4o-mini" in Cursor for Gemma.
+  - model_name: gpt-4o-mini
+    litellm_params:
+      model: ollama/gemma4-31b
+      api_base: http://host.docker.internal:11434
+
+# Require this bearer token on requests (Cursor → OpenAI API Key).
+general_settings:
+  master_key: sk-cursor-local
+
+litellm_settings:
+  drop_params: true
