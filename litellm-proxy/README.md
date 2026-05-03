@@ -41,6 +41,8 @@ cd litellm-proxy
 docker compose up -d
 ```
 
+If your user cannot talk to the Docker socket (`permission denied`), either run `sudo usermod -aG docker "$USER"` and re-login, or use **`../scripts/docker-litellm.sh`** from the repo root (reads **`SUDO_PASSWORD`** from `/home/vib/.env` — keep `.env` out of git).
+
 Smoke test (proxy on localhost:4000):
 
 ```bash
