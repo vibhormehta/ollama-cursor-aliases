@@ -9,6 +9,12 @@ model_list:
       model: "ollama/qwen2.5-coder:32b"
       api_base: http://host.docker.internal:11434
 
+  # Composer-friendly alias: pick "gpt-5.1" in Cursor if "gpt-4o" is not listed there; same Qwen backend.
+  - model_name: gpt-5.1
+    litellm_params:
+      model: "ollama/qwen2.5-coder:32b"
+      api_base: http://host.docker.internal:11434
+
   # Optional second slot: choose "gpt-4o-mini" in Cursor for Gemma.
   - model_name: gpt-4o-mini
     litellm_params:
