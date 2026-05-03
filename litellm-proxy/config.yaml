@@ -16,6 +16,7 @@ model_list:
       extra_body:
         options:
           num_ctx: 8192
+          num_predict: 8192
 
   # Composer-friendly alias: pick "gpt-5.1" in Cursor if "gpt-4o" is not listed there; same Qwen backend.
   - model_name: gpt-5.1
@@ -25,6 +26,7 @@ model_list:
       extra_body:
         options:
           num_ctx: 8192
+          num_predict: 8192
 
   # Optional second slot: choose "gpt-4o-mini" in Cursor for Gemma.
   # Uses Ollama model gemma4-cursor:31b (see modelfiles/gemma4-cursor-31b + scripts/create-aliases.sh).
@@ -35,6 +37,7 @@ model_list:
       extra_body:
         options:
           num_ctx: 8192
+          num_predict: 8192
 
 # Require this bearer token on requests (Cursor → OpenAI API Key).
 general_settings:
