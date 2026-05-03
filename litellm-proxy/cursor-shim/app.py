@@ -146,7 +146,10 @@ async def proxy_request(request: Request) -> Response:
     headers = build_upstream_headers(request, new_len)
 
     client_timeout = httpx.Timeout(600.0, connect=30.0)
-    async with httpx.AsyncClient(timeout=client_timeout) as client:
+    # httpx closes the connection when AsyncClient exits. We must keep the client
+    # alive until StreamingResponse finishes yielding chunks (SSE / chunked bodies).
+    client = httpx.AsyncClient(timeout=client_timeout)
+    try:
         req = client.build_request(
             request.method,
             url,
@@ -154,12 +157,16 @@ async def proxy_request(request: Request) -> Response:
             content=body if body else None,
         )
         upstream = await client.send(req, stream=True)
+    except Exception:
+        await client.aclose()
+        raise
 
     out_headers = [
         (k, v)
         for k, v in upstream.headers.multi_items()
         if k.lower() not in HOP_BY_HOP
     ]
+    status_code = upstream.status_code
 
     async def stream():
         try:
@@ -167,10 +174,11 @@ async def proxy_request(request: Request) -> Response:
                 yield chunk
         finally:
             await upstream.aclose()
+            await client.aclose()
 
     return StreamingResponse(
         stream(),
-        status_code=upstream.status_code,
+        status_code=status_code,
         headers=dict(out_headers),
     )
 
