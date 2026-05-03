@@ -122,6 +122,7 @@ Per-request only (no global spam): some builds honor **`"litellm_request_debug":
 ## Troubleshooting
 
 - **`Router.acompletion() missing … 'messages'` (500) from Cursor with the API key toggle ON:** Use the **cursor-shim** service from `docker-compose.yml` (public port → shim → LiteLLM). If you still see 500s, capture one failing request body (redact secrets) — Agent/Composer may send shapes the shim does not map yet; see [Cursor Agent / Responses format](https://forum.cursor.com/t/cursor-agent-sends-responses-api-format-to-chat-completions-endpoint/153019).  
+- **Only `{` or one character in the UI, but GPU spikes:** Cursor uses **streaming** (`stream: true`). An older shim bug closed the httpx client before the body finished; **rebuild `cursor-shim`** (`docker compose build cursor-shim && docker compose up -d cursor-shim`) so the client stays open for the full SSE stream.  
 - **Credits still decrement with the toggle OFF:** Cursor is not using your override for that request path; try **toggle ON** + shim + same **`/v1`** URL.
 - **502 / connection errors**: From inside the LiteLLM container/host, `curl` Ollama’s root or `/api/tags` using the same `api_base` you configured.
 - **Invalid model / upstream error with the real Ollama name**: Fix `litellm_params.model` to match `ollama list` on the target host, restart LiteLLM. Cursor can stay on `gpt-4o`; the bug is the LiteLLM → Ollama route, not the dropdown label.
