@@ -4,12 +4,12 @@
 model_list:
   - model_name: gpt-4o
     litellm_params:
-      model: ollama/qwen25-coder-32b
+      model: "ollama/qwen2.5-coder:32b"
       api_base: https://ollama.example.com
 
   - model_name: gpt-4o-mini
     litellm_params:
-      model: ollama/gemma4-31b
+      model: "ollama/gemma4:31b"
       api_base: https://ollama.example.com
 
 general_settings:

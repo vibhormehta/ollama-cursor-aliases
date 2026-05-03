@@ -45,7 +45,7 @@ You should get JSON with `choices`. If you cannot run `ollama create` on the ser
 
 ### If Cursor still rejects model names (proxy + catalog id)
 
-Use a small OpenAI-compatible proxy so Cursor only ever selects a **normal** model id (e.g. `gpt-4o`) while the proxy routes to Ollama. See **`litellm-proxy/README.md`** for Docker Compose, `config.yaml`, and Cursor settings.
+Use a small OpenAI-compatible proxy so Cursor only ever selects a **normal** model id (e.g. `gpt-4o`) while the proxy routes to Ollama. In **`litellm-proxy/config.yaml`**, set `litellm_params.model` to real tags from **`ollama list`** on the LLM host (e.g. `"ollama/qwen2.5-coder:32b"`), not made-up names. See **`litellm-proxy/README.md`** for Docker Compose and Cursor settings.
 
 ## Publish to GitHub
 
