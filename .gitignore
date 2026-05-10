@@ -1,3 +1,6 @@
+# Aider CLI local state
+.aider*
+
 .DS_Store
 *.log
 .env
